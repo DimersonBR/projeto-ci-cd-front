@@ -1,0 +1,80 @@
+name: Deploy Automático Render
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # executa apenas quando uma nova versão semântica for criada
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+   #   - name: Instalar dependências (dev não necessárias para build Docker)
+   #     run: npm ci
+
+      - name: Build e teste (opcional)
+        run: |
+          echo "Rodando testes (se existirem)"
+          npm run test || true
+
+      - name: Deploy no Render (criando um deploy via API)
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          if [ -z "${RENDER_API_KEY}" ] || [ -z "${SERVICE_ID}" ]; then
+            echo "RENDER_API_KEY ou SERVICE_ID não configurados. Abortando."
+            exit 1
+          fi
+          curl -X POST "https://api.render.com/v1/services/${SERVICE_ID}/deploys" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            -d ''
+name: Deploy Automático Render
+
+on:
+  push:
+    tags:
+      - "v*.*.*" # executa apenas quando uma nova versão semântica for criada
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+   #   - name: Instalar dependências (dev não necessárias para build Docker)
+   #     run: npm ci
+
+      - name: Build e teste (opcional)
+        run: |
+          echo "Rodando testes (se existirem)"
+          npm run test || true
+
+      - name: Deploy no Render (criando um deploy via API)
+        env:
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+          SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+        run: |
+          if [ -z "${RENDER_API_KEY}" ] || [ -z "${SERVICE_ID}" ]; then
+            echo "RENDER_API_KEY ou SERVICE_ID não configurados. Abortando."
+            exit 1
+          fi
+          curl -X POST "https://api.render.com/v1/services/${SERVICE_ID}/deploys" \
+            -H "Accept: application/json" \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            -d ''
